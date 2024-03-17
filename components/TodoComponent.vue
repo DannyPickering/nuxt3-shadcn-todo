@@ -1,37 +1,54 @@
 <script setup lang="ts">
   import { ref, computed } from 'vue'
   import { v4 as uuidv4 } from 'uuid';
-
-  // import TodoHeader from '@/components/TodoHeader.vue'
-  import TodoItem from './TodoItem.vue'
   
+  interface Todo {
+    completed: boolean;
+    title: string,
+    id: string
+  }
 
   onMounted(() => {
-    if (typeof localStorage != undefined) {
-      todos.value = JSON.parse(localStorage.getItem('todos')) || []
+    const storedTodos = localStorage.getItem('todos')
+    if (storedTodos !== null) {
+      todos.value = JSON.parse(storedTodos) || []
     }
   })
 
-  let todos = ref([])
+  let todos = ref<Todo[]>([])
 
   const filteredTodos = computed(() => {
     // TODO create filters
     return todos.value
   })
 
-  function addTodo(value) {
+
+
+  const addTodo = (value: String) => {
     todos.value.push({
       completed: false,
-      title: value,
+      title: value.trim(),
       id: uuidv4()
     })
 
     updateLocalStorage()
   }
 
-  function updateLocalStorage () {
+  const toggleCompleted = (id: string) => {
+    const idx = todos.value.findIndex(obj => obj.id === id)
+
+    if (idx !== -1) {
+      todos.value[idx]['completed'] = !todos.value[idx]['completed']
+
+      updateLocalStorage()
+    }
+  }
+
+  const updateLocalStorage = () => {
     localStorage.setItem('todos', JSON.stringify(todos.value))
   }
+
+
 </script>
 
 <template>
@@ -41,8 +58,8 @@
     </div>
 
     <div v-show="todos.length > 0">
-      <ul>
-        <TodoItem v-for="(todo, index) in todos" :key="index" :todo="todo"/>
+      <ul class="bg-neutral-50 rounded-b-xl shadow-2xl">
+        <TodoItem v-for="(todo, index) in todos" :key="index" :todo="todo" @toggleCompleted="toggleCompleted"/>
       </ul>
     </div>
   </div>
