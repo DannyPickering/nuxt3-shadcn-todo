@@ -17,7 +17,7 @@
 
   const todoValue = ref('')
 
-  const emits = defineEmits(['addTodo'])
+  const emits = defineEmits(['addTodo', 'completeAll'])
   const addTodo = () => {
     if (todoValue.value.length > 0) {
       emits('addTodo', todoValue.value)
