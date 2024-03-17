@@ -5,6 +5,13 @@
   // import TodoHeader from '@/components/TodoHeader.vue'
   import TodoItem from './TodoItem.vue'
   
+
+  onMounted(() => {
+    if (typeof localStorage != undefined) {
+      todos.value = JSON.parse(localStorage.getItem('todos')) || []
+    }
+  })
+
   let todos = ref([])
 
   const filteredTodos = computed(() => {
@@ -12,17 +19,18 @@
     return todos.value
   })
 
-  console.log(filteredTodos.value)
-
   function addTodo(value) {
-    console.log(value)
     todos.value.push({
       completed: false,
       title: value,
       id: uuidv4()
     })
 
-    console.log(todos.value)
+    updateLocalStorage()
+  }
+
+  function updateLocalStorage () {
+    localStorage.setItem('todos', JSON.stringify(todos.value))
   }
 </script>
 
