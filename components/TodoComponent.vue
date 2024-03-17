@@ -1,12 +1,7 @@
 <script setup lang="ts">
   import { ref, computed } from 'vue'
   import { v4 as uuidv4 } from 'uuid';
-  
-  interface Todo {
-    completed: boolean;
-    title: string,
-    id: string
-  }
+  import type { Todo } from '@/types';
 
   onMounted(() => {
     const storedTodos = localStorage.getItem('todos')
@@ -17,12 +12,15 @@
 
   let todos = ref<Todo[]>([])
 
+  const filter = ref<string>('none')
+
   const filteredTodos = computed(() => {
     // TODO create filters
-    return todos.value
+    return filter.value === 'none' ?  todos.value : todos.value
+    
   })
 
-
+  const activeTodos = computed(() => todos.value.filter((todo) => !todo.completed))
 
   const addTodo = (value: String) => {
     todos.value.push({
@@ -44,6 +42,14 @@
     }
   }
 
+  const completeAll = () => {
+    if (activeTodos.value.length === 0) {
+      todos.value.forEach((todo) => todo.completed = false)
+    } else {
+      todos.value.forEach((todo) => todo.completed = true)
+    }
+  }
+
   const updateLocalStorage = () => {
     localStorage.setItem('todos', JSON.stringify(todos.value))
   }
@@ -54,12 +60,15 @@
 <template>
   <div class="mx-auto max-w-[80ch]">
     <div>
-      <TodoHeader @addTodo="addTodo"/>
+      <TodoHeader :todos="filteredTodos" @addTodo="addTodo" @completeAll="completeAll"/>
     </div>
 
-    <div v-show="todos.length > 0">
+    <div v-if="todos.length < 1" class="bg-neutral-50 rounded-b-xl shadow-2xl px-2 py-8 text-center text-xl text-slate-600">
+      <p>Nothing todo! Add some tasks above.</p>
+    </div>
+    <div v-else>
       <ul class="bg-neutral-50 rounded-b-xl shadow-2xl">
-        <TodoItem v-for="(todo, index) in todos" :key="index" :todo="todo" @toggleCompleted="toggleCompleted"/>
+        <TodoItem v-for="(todo, index) in filteredTodos" :key="index" :todo="todo" @toggleCompleted="toggleCompleted"/>
       </ul>
     </div>
   </div>

@@ -6,6 +6,14 @@
   import { Input } from '@/components/ui/input'
   import { Button } from '@/components/ui/button'
   import { CornerDownRight } from 'lucide-vue-next'
+  import type { Todo } from '@/types'
+  
+  const props = defineProps({
+    todos: {
+      type: Array as () => Todo[],
+      required: true
+    }
+  })
 
   const todoValue = ref('')
 
@@ -29,10 +37,10 @@
         <span>Complete all</span>
       </Label>
       <CornerDownRight class="absolute left-[-40px]" />
-      <Checkbox id="completeAll" class="min-w-6 min-h-6 rounded-full" />
+      <Checkbox id="completeAll" class="min-w-6 min-h-6 rounded-full" :disabled="todos.length < 1" @click="$emit('completeAll')"/>
     </div>
-    <Input v-model="todoValue" @keyup.enter="addTodo()" placeholder="What needs to be done?" autofocus/>
-    <Button class="min-w-[70px]" @click="addTodo()">+</Button>
+    <Input v-model="todoValue" @keyup.enter="addTodo()" placeholder="What needs to be done?" class="h-12 text-xl" autofocus />
+    <Button class="min-w-[70px] h-12" @click="addTodo()">+</Button>
   </div>
 </template>
 
