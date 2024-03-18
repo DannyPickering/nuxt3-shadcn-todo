@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ref } from 'vue'
+  import { ref, computed, watch } from 'vue'
 
   import { Label } from '@/components/ui/label'
   import { Checkbox } from '@/components/ui/checkbox'
@@ -12,12 +12,25 @@
     todos: {
       type: Array as () => Todo[],
       required: true
+    },
+    activeTodos: {
+      type: Array as () => Todo[],
+      required: true
     }
   })
+  
+  watch(() => props.activeTodos, (newValue) => {
+    console.log(newValue)
+    isChecked.value = newValue.length > 0 ? false : true
+  })
 
+  const isChecked = ref(false)
   const todoValue = ref('')
 
   const emits = defineEmits(['addTodo', 'completeAll'])
+
+  
+
   const addTodo = () => {
     if (todoValue.value.length > 0) {
       emits('addTodo', todoValue.value)
@@ -37,7 +50,7 @@
         <span>Complete all</span>
       </Label>
       <CornerDownRight class="absolute left-[-40px]" />
-      <Checkbox id="completeAll" class="min-w-6 min-h-6 rounded-full" :disabled="todos.length < 1" @click="$emit('completeAll')"/>
+      <Checkbox id="completeAll" class="min-w-6 min-h-6 rounded-full" :disabled="todos.length < 1" @click="$emit('completeAll')" v-model:checked="isChecked" />
     </div>
     <Input v-model="todoValue" @keyup.enter="addTodo()" placeholder="What needs to be done?" class="h-12 text-xl" autofocus />
     <Button class="min-w-[70px] h-12" @click="addTodo()">+</Button>

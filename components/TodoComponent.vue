@@ -43,7 +43,7 @@
   }
 
   const completeAll = () => {
-    if (activeTodos.value.length === 0) {
+    if (activeTodos.value.length <= 0) {
       todos.value.forEach((todo) => todo.completed = false)
     } else {
       todos.value.forEach((todo) => todo.completed = true)
@@ -60,7 +60,7 @@
 <template>
   <div class="mx-auto max-w-[80ch]">
     <div>
-      <TodoHeader :todos="filteredTodos" @addTodo="addTodo" @completeAll="completeAll"/>
+      <TodoHeader :todos="filteredTodos" :activeTodos="activeTodos" @addTodo="addTodo" @completeAll="completeAll"/>
     </div>
 
     <div v-if="todos.length < 1" class="bg-neutral-50 rounded-b-xl shadow-2xl px-2 py-8 text-center text-xl text-slate-600">
